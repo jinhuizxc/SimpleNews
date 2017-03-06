@@ -22,6 +22,7 @@ import com.example.jh.simplenews.view.MainView;
 
 public class MainActivity extends AppCompatActivity implements MainView {
 
+    //进行编辑啦、
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private NavigationView mNavigationView;
