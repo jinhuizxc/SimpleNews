@@ -2,6 +2,7 @@ package com.example.jh.simplenews.utils;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.google.gson.internal.$Gson$Types;
 import com.squareup.okhttp.Callback;
@@ -29,158 +30,172 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class OkHttpUtils {
-    private static final String TAG = "OkHttpUtils";
 
+    private static final String TAG = "OkHttpUtils";
     private static OkHttpUtils mInstance;
     private OkHttpClient mOkHttpClient;
-    private Handler mDelivery;
+    private Handler handler;
 
-    private OkHttpUtils() {
+    //构造方法
+    public OkHttpUtils() {
         mOkHttpClient = new OkHttpClient();
+        //连接超时、写入超时、读取超时
         mOkHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
         mOkHttpClient.setWriteTimeout(10, TimeUnit.SECONDS);
         mOkHttpClient.setReadTimeout(30, TimeUnit.SECONDS);
-        //cookie enabled
+        // cookie enabled
         mOkHttpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ORIGINAL_SERVER));
-        mDelivery = new Handler(Looper.getMainLooper());
+        handler = new Handler(Looper.getMainLooper());
     }
 
-    private synchronized static OkHttpUtils getmInstance() {
+    public synchronized static OkHttpUtils getmInstance() {
         if (mInstance == null) {
             mInstance = new OkHttpUtils();
         }
         return mInstance;
     }
 
-    private void getRequest(String url, final ResultCallback callback) {
-        final Request request = new Request.Builder().url(url).build();
+    // get请求
+    private void getRequest(String url, ResultCallBack callback) {
+        Log.e(TAG, "getRequest方法被执行---------------");
+        Request request = new Request.Builder().url(url).build();
         deliveryResult(callback, request);
     }
 
-    private void postRequest(String url, final ResultCallback callback, List<Param> params) {
+    // post请求
+    private void postRequest(String url, ResultCallBack callback, List<Param> params){
         Request request = buildPostRequest(url, params);
         deliveryResult(callback, request);
     }
 
-    private void deliveryResult(final ResultCallback callback, Request request) {
-
-        mOkHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, final IOException e) {
-                sendFailCallback(callback, e);
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                try {
-                    String str = response.body().string();
-                    if (callback.mType == String.class) {
-                        sendSuccessCallBack(callback, str);
-                    } else {
-                        Object object = JsonUtils.deserialize(str, callback.mType);
-                        sendSuccessCallBack(callback, object);
-                    }
-                } catch (final Exception e) {
-                    LogUtils.e(TAG, "convert json failure", e);
-                    sendFailCallback(callback, e);
-                }
-
-            }
-        });
-    }
-
-    private void sendFailCallback(final ResultCallback callback, final Exception e) {
-        mDelivery.post(new Runnable() {
-            @Override
-            public void run() {
-                if (callback != null) {
-                    callback.onFailure(e);
-                }
-            }
-        });
-    }
-
-    private void sendSuccessCallBack(final ResultCallback callback, final Object obj) {
-        mDelivery.post(new Runnable() {
-            @Override
-            public void run() {
-                if (callback != null) {
-                    callback.onSuccess(obj);
-                }
-            }
-        });
-    }
-
+    //建立post请求
     private Request buildPostRequest(String url, List<Param> params) {
         FormEncodingBuilder builder = new FormEncodingBuilder();
-        for (Param param : params) {
+        for (Param param:params) {
             builder.add(param.key, param.value);
         }
         RequestBody requestBody = builder.build();
         return new Request.Builder().url(url).post(requestBody).build();
     }
 
+    //提取结果
+    private void deliveryResult(final ResultCallBack callback, Request request) {
+        mOkHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                sendFailCallBack(callback, e);
+            }
 
-    /**********************对外接口************************/
+            @Override
+            public void onResponse(Response response) throws IOException {
+                try{
+                    String str = response.body().string();
+                    if(callback.mType == String.class){
+                        sendSuccessCallBack(callback, str);
+                    }else{
+                        Object object = JsonUtils.deserialize(str, callback.mType);
+                        sendSuccessCallBack(callback, object);
+                    }
+                }catch(Exception e){
+                    LogUtils.e(TAG, "convert json failure", e);
+                    sendFailCallBack(callback, e);
+                }
+
+            }
+        });
+
+    }
+
+    // 发送成功回调方法
+    private void sendSuccessCallBack(final ResultCallBack callback, final Object object) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(callback != null){
+                    callback.OnSuccess(object);
+                }
+            }
+        });
+    }
+
+
+    // 发送失败回调方法
+    private void sendFailCallBack(final ResultCallBack callback, final Exception e) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (callback != null) {
+                    callback.OnFailure(e);
+                }
+            }
+        });
+    }
+
+
+    /*******************对外接口****************/
 
     /**
      * get请求
-     * @param url  请求url
-     * @param callback  请求回调
+     *
+     * @param url      请求url
+     * @param callback 请求回调
      */
-    public static void get(String url, ResultCallback callback) {
+
+    public static void get(String url, ResultCallBack callback) {
         getmInstance().getRequest(url, callback);
     }
 
     /**
      * post请求
-     * @param url       请求url
-     * @param callback  请求回调
-     * @param params    请求参数
+     *
+     * @param callback
      */
-    public static void post(String url, final ResultCallback callback, List<Param> params) {
+    public static void post(String url, ResultCallBack callback, List<Param> params) {
         getmInstance().postRequest(url, callback, params);
     }
 
+
     /**
      * http请求回调类,回调方法在UI线程中执行
+     *
      * @param <T>
      */
-    public static abstract class ResultCallback<T> {
-
+    public static abstract class ResultCallBack<T> {
+        // 反射  java.lang.reflect接口
         Type mType;
 
-        public ResultCallback(){
+        public ResultCallBack() {
             mType = getSuperclassTypeParameter(getClass());
         }
 
-        static Type getSuperclassTypeParameter(Class<?> subclass) {
-            Type superclass = subclass.getGenericSuperclass();
+        private Type getSuperclassTypeParameter(Class<? extends ResultCallBack> aClass) {
+            Type superclass = aClass.getGenericSuperclass();
             if (superclass instanceof Class) {
-                throw new RuntimeException("Missing type parameter.");
+                throw new RuntimeException("Missing type parameter");     // 抛出运行时异常
             }
-            ParameterizedType parameterized = (ParameterizedType) superclass;
-            return $Gson$Types.canonicalize(parameterized.getActualTypeArguments()[0]);
+            ParameterizedType parameterizedType = (ParameterizedType) superclass;
+            return $Gson$Types.canonicalize(parameterizedType.getActualTypeArguments()[0]);
         }
 
         /**
          * 请求成功回调
+         *
          * @param response
          */
-        public abstract void onSuccess(T response);
+        public abstract void OnSuccess(T response);
 
         /**
          * 请求失败回调
+         *
          * @param e
          */
-        public abstract void onFailure(Exception e);
+        public abstract void OnFailure(Exception e);
     }
 
     /**
      * post请求参数类
      */
     public static class Param {
-
         String key;
         String value;
 
@@ -191,8 +206,8 @@ public class OkHttpUtils {
             this.key = key;
             this.value = value;
         }
-
     }
 
 
 }
+

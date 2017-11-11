@@ -12,7 +12,7 @@ import java.util.List;
 public interface NewsView {
 
     void showProgress();
-    void addNews(List<NewsBean> newsList);
     void hideProgress();
+    void addNews(List<NewsBean> newsList);
     void showLoadFailMsg();
 }

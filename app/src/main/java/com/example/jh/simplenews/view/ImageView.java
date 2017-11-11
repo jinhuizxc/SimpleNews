@@ -10,8 +10,12 @@ import java.util.List;
  */
 
 public interface ImageView {
+    // 添加图片
     void addImages(List<ImageBean> list);
+    // 显示进度
     void showProgress();
+    // 隐藏进度
     void hideProgress();
+    // 显示加载失败信息
     void showLoadFailMsg();
 }

@@ -12,10 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.jh.simplenews.Impl.WeatherPresenterImpl;
+import com.example.jh.simplenews.Presenter.weatherPresenter.WeatherPresenterImpl;
 import com.example.jh.simplenews.R;
 import com.example.jh.simplenews.beans.WeatherBean;
-import com.example.jh.simplenews.interfaces.WeatherPresenter;
+import com.example.jh.simplenews.Presenter.weatherPresenter.WeatherPresenter;
 import com.example.jh.simplenews.view.WeatherView;
 
 import java.util.ArrayList;

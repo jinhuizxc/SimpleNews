@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.jh.simplenews.R;
+import com.example.jh.simplenews.adapter.MyPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,11 @@ import java.util.List;
  * 作者：jinhui on 2017/2/21
  * 邮箱：1004260403@qq.com
  *
+ * 我们想要在新闻fragment里面设计我们的布局，
+ * 我们需要tablayout设置我们的toolbar,布局采用recyclerView下拉刷新我们的新闻列表项。
+ * TabLayout + toolbar + viewPager;
+ * fragment里面嵌套fragment,里面的fragment为列表项。
+ *
  */
 public class NewsFragment extends Fragment {
 
@@ -27,6 +33,7 @@ public class NewsFragment extends Fragment {
     public static final int NEWS_TYPE_NBA = 1;
     public static final int NEWS_TYPE_CARS = 2;
     public static final int NEWS_TYPE_JOKES = 3;
+
 
     private TabLayout mTablayout;
     private ViewPager mViewPager;
@@ -39,6 +46,7 @@ public class NewsFragment extends Fragment {
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mViewPager.setOffscreenPageLimit(3);
         setupViewPager(mViewPager);
+        // 添加 tablayout标签
         mTablayout.addTab(mTablayout.newTab().setText(R.string.top));
         mTablayout.addTab(mTablayout.newTab().setText(R.string.nba));
         mTablayout.addTab(mTablayout.newTab().setText(R.string.cars));
@@ -49,6 +57,8 @@ public class NewsFragment extends Fragment {
 
     private void setupViewPager(ViewPager mViewPager) {
         //Fragment中嵌套使用Fragment一定要使用getChildFragmentManager(),否则会有问题
+        //  MyPagerAdapter extends FragmentPagerAdapter ，添加NewsListFragment用于新闻显示
+        // 这里设置其可以让viewpager支持可滑动，不设置这里的适配器则不可以滑动。
         MyPagerAdapter adapter = new MyPagerAdapter(getChildFragmentManager());
         adapter.addFragment(NewsListFragment.newInstance(NEWS_TYPE_TOP), getString(R.string.top));
         adapter.addFragment(NewsListFragment.newInstance(NEWS_TYPE_NBA), getString(R.string.nba));
@@ -57,32 +67,5 @@ public class NewsFragment extends Fragment {
         mViewPager.setAdapter(adapter);
     }
 
-    public static class MyPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragments = new ArrayList<>();
-        private final List<String> mFragmentTitles = new ArrayList<>();
 
-        public MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragments.add(fragment);
-            mFragmentTitles.add(title);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragments.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitles.get(position);
-        }
-    }
 }

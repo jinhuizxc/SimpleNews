@@ -13,13 +13,17 @@ import java.util.List;
 /**
  * 作者：jinhui on 2017/2/21
  * 邮箱：1004260403@qq.com
+ *
+ *  将获取到的json转换为新闻列表对象
  */
 
 public class NewsJsonUtils {
+
     private final static String TAG = "NewsJsonUtils";
 
     /**
      * 将获取到的json转换为新闻列表对象
+     *
      * @param res
      * @param value
      * @return
@@ -30,7 +34,7 @@ public class NewsJsonUtils {
             JsonParser parser = new JsonParser();
             JsonObject jsonObj = parser.parse(res).getAsJsonObject();
             JsonElement jsonElement = jsonObj.get(value);
-            if(jsonElement == null) {
+            if (jsonElement == null) {
                 return null;
             }
             JsonArray jsonArray = jsonElement.getAsJsonArray();
@@ -49,7 +53,7 @@ public class NewsJsonUtils {
                 }
             }
         } catch (Exception e) {
-            LogUtils.e(TAG, "readJsonNewsBeans error" , e);
+            LogUtils.e(TAG, "readJsonNewsBeans error", e);
         }
         return beans;
     }
@@ -60,12 +64,12 @@ public class NewsJsonUtils {
             JsonParser parser = new JsonParser();
             JsonObject jsonObj = parser.parse(res).getAsJsonObject();
             JsonElement jsonElement = jsonObj.get(docId);
-            if(jsonElement == null) {
+            if (jsonElement == null) {
                 return null;
             }
             newsDetailBean = JsonUtils.deserialize(jsonElement.getAsJsonObject(), NewsDetailBean.class);
         } catch (Exception e) {
-            LogUtils.e(TAG, "readJsonNewsBeans error" , e);
+            LogUtils.e(TAG, "readJsonNewsBeans error", e);
         }
         return newsDetailBean;
     }

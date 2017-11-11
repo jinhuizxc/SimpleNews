@@ -12,11 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.jh.simplenews.Impl.ImagePresenterImpl;
+import com.example.jh.simplenews.Presenter.imagePresenter.ImagePresenterImpl;
 import com.example.jh.simplenews.R;
 import com.example.jh.simplenews.adapter.ImageAdapter;
 import com.example.jh.simplenews.beans.ImageBean;
-import com.example.jh.simplenews.interfaces.ImagePresenter;
+import com.example.jh.simplenews.Presenter.imagePresenter.ImagePresenter;
 import com.example.jh.simplenews.view.ImageView;
 
 import java.util.ArrayList;
@@ -68,6 +68,7 @@ public class ImageFragment extends Fragment implements ImageView, SwipeRefreshLa
         return view;
     }
 
+    //内部类接口
     private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
 
         private int lastVisibleItem;

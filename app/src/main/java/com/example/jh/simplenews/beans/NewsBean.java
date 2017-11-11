@@ -6,12 +6,15 @@ import java.io.Serializable;
  * 作者：jinhui on 2017/2/21
  * 邮箱：1004260403@qq.com
  *  新闻实体类
+ *  使用Serializable关键字表示该类可序列化，
+ *  不管在Java或者是.net 里都代表的这个含义。有句话是这么说的：
+ *  “只有被序列化的类才能够持久保存”。
  */
 
 public class NewsBean implements Serializable{
 
     /**
-     * docid
+     * docid  文档id
      */
     private String docid;
     /**
@@ -63,7 +66,8 @@ public class NewsBean implements Serializable{
         this.digest = digest;
     }
 
-    public String getImgsrc() {
+    public String
+    getImgsrc() {
         return imgsrc;
     }
 

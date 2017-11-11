@@ -5,9 +5,11 @@ import java.io.Serializable;
 /**
  * 作者：jinhui on 2017/2/21
  * 邮箱：1004260403@qq.com
+ * 图片类：5个参数，标题，资源url,宽度、高度
  */
 
 public class ImageBean implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private String title;
@@ -19,7 +21,6 @@ public class ImageBean implements Serializable {
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -27,7 +28,6 @@ public class ImageBean implements Serializable {
     public String getThumburl() {
         return thumburl;
     }
-
     public void setThumburl(String thumburl) {
         this.thumburl = thumburl;
     }
@@ -35,7 +35,6 @@ public class ImageBean implements Serializable {
     public String getSourceurl() {
         return sourceurl;
     }
-
     public void setSourceurl(String sourceurl) {
         this.sourceurl = sourceurl;
     }
@@ -43,7 +42,6 @@ public class ImageBean implements Serializable {
     public int getHeight() {
         return height;
     }
-
     public void setHeight(int height) {
         this.height = height;
     }
@@ -51,7 +49,6 @@ public class ImageBean implements Serializable {
     public int getWidth() {
         return width;
     }
-
     public void setWidth(int width) {
         this.width = width;
     }

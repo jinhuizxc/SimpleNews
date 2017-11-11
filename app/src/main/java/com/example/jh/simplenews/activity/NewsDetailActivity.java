@@ -7,10 +7,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.example.jh.simplenews.Impl.NewsDetailPresenterImpl;
+import com.example.jh.simplenews.Presenter.newsDetailPresenter.NewsDetailPresenterImpl;
 import com.example.jh.simplenews.R;
 import com.example.jh.simplenews.beans.NewsBean;
-import com.example.jh.simplenews.interfaces.NewsDetailPresenter;
+import com.example.jh.simplenews.Presenter.newsDetailPresenter.NewsDetailPresenter;
 import com.example.jh.simplenews.utils.ImageLoaderUtils;
 import com.example.jh.simplenews.utils.ToolsUtil;
 import com.example.jh.simplenews.view.NewsDetailView;
@@ -31,6 +31,7 @@ public class NewsDetailActivity extends SwipeBackActivity implements NewsDetailV
     private HtmlTextView mTVNewsContent;
     private NewsDetailPresenter mNewsDetailPresenter;
     private ProgressBar mProgressBar;
+    // 交互
     private SwipeBackLayout mSwipeBackLayout;
 
     @Override

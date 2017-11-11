@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--程序启动设置无主题才能用toolbar-->
     <!--简单新闻无标题-->
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

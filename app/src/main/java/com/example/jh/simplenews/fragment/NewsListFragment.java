@@ -15,13 +15,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.jh.simplenews.Impl.NewsPresenterImpl;
+import com.example.jh.simplenews.Presenter.newsPresenter.NewsPresenterImpl;
 import com.example.jh.simplenews.R;
 import com.example.jh.simplenews.activity.NewsDetailActivity;
 import com.example.jh.simplenews.adapter.NewsAdapter;
 import com.example.jh.simplenews.beans.NewsBean;
-import com.example.jh.simplenews.commons.Urls;
-import com.example.jh.simplenews.interfaces.NewsPresenter;
+import com.example.jh.simplenews.Api.Urls;
+import com.example.jh.simplenews.Presenter.newsPresenter.NewsPresenter;
 import com.example.jh.simplenews.utils.LogUtils;
 import com.example.jh.simplenews.view.NewsView;
 
@@ -32,20 +32,30 @@ import java.util.List;
  *
  * 作者：jinhui on 2017/2/21
  * 邮箱：1004260403@qq.com
- * 新闻Fragment
+ * 新闻列表Fragment
+ * 在这个fragment里面就是加载我们来自网络端的数据。就要用到mvp的presenter了
+ *
+ * 之前写的Presenter里面的代码在activity里面，这里在fragment里面其实就是activtiy，
+ * 当前的fragment要实现NewsView的接口
+ *
  */
 public class NewsListFragment extends Fragment implements NewsView, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "NewsListFragment";
 
+    // 下拉刷新的代码
     private SwipeRefreshLayout mSwipeRefreshWidget;
     private RecyclerView mRecyclerView;
+    // 布局管理器！
     private LinearLayoutManager mLayoutManager;
+    // 链表数据 + adapter
     private NewsAdapter mAdapter;
     private List<NewsBean> mData;
+    // presenter的逻辑编写开始的地方
     private NewsPresenter mNewsPresenter;
 
     private int mType = NewsFragment.NEWS_TYPE_TOP;
+    // 新闻列表当前页下标
     private int pageIndex = 0;
 
     public static NewsListFragment newInstance(int type) {
@@ -59,6 +69,7 @@ public class NewsListFragment extends Fragment implements NewsView, SwipeRefresh
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 父类指向子类对象
         mNewsPresenter = new NewsPresenterImpl(this);
         mType = getArguments().getInt("type");
     }
@@ -66,8 +77,8 @@ public class NewsListFragment extends Fragment implements NewsView, SwipeRefresh
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_newslist, null);
 
+        View view = inflater.inflate(R.layout.fragment_newslist, null);
         mSwipeRefreshWidget = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_widget);
         mSwipeRefreshWidget.setColorSchemeResources(R.color.primary,
                 R.color.primary_dark, R.color.primary_light,
@@ -79,11 +90,15 @@ public class NewsListFragment extends Fragment implements NewsView, SwipeRefresh
 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-
+        //设置Item增加、移除动画
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        // 适配器的初始化，避免空指针
         mAdapter = new NewsAdapter(getActivity().getApplicationContext());
+        // 之前在写对数据的监听上面是对listview进行监听，
+        // 但是由于采用了recyclerview,这里对适配器进行item项的监听，实现内部监听接口。
         mAdapter.setOnItemClickListener(mOnItemClickListener);
         mRecyclerView.setAdapter(mAdapter);
+        // 滑动监听
         mRecyclerView.addOnScrollListener(mOnScrollListener);
         onRefresh();
         return view;
@@ -107,7 +122,7 @@ public class NewsListFragment extends Fragment implements NewsView, SwipeRefresh
                     && mAdapter.isShowFooter()) {
                 //加载更多
                 LogUtils.d(TAG, "loading more data");
-                mNewsPresenter.loadNews(mType, pageIndex + Urls.PAZE_SIZE);
+                mNewsPresenter.loadItem(mType, pageIndex + Urls.PAZE_SIZE);
             }
         }
     };
@@ -119,6 +134,7 @@ public class NewsListFragment extends Fragment implements NewsView, SwipeRefresh
                 return;
             }
             NewsBean news = mAdapter.getItem(position);
+            //界面的跳转
             Intent intent = new Intent(getActivity(), NewsDetailActivity.class);
             intent.putExtra("news", news);
 
@@ -138,13 +154,14 @@ public class NewsListFragment extends Fragment implements NewsView, SwipeRefresh
 
     @Override
     public void addNews(List<NewsBean> newsList) {
+        // 添加news
         mAdapter.isShowFooter(true);
         if(mData == null) {
             mData = new ArrayList<NewsBean>();
         }
         mData.addAll(newsList);
         if(pageIndex == 0) {
-            mAdapter.setmDate(mData);
+            mAdapter.setmData(mData);
         } else {
             //如果没有更多数据了,则隐藏footer布局
             if(newsList == null || newsList.size() == 0) {
@@ -171,13 +188,14 @@ public class NewsListFragment extends Fragment implements NewsView, SwipeRefresh
         Snackbar.make(view, getString(R.string.load_fail), Snackbar.LENGTH_SHORT).show();
     }
 
+    //  setOnRefreshListener的监听方法
     @Override
     public void onRefresh() {
         pageIndex = 0;
         if(mData != null) {
             mData.clear();
         }
-        mNewsPresenter.loadNews(mType, pageIndex);
+        mNewsPresenter.loadItem(mType, pageIndex);
     }
 
 }

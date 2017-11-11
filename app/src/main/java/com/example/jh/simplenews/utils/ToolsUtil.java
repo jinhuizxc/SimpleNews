@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
  */
 
 public class ToolsUtil {
+
     public static final int getHeightInPx(Context context) {
         final int height = context.getResources().getDisplayMetrics().heightPixels;
         return height;

@@ -6,7 +6,10 @@ package com.example.jh.simplenews.view;
  */
 
 public interface NewsDetailView {
+    // 显示新闻内容
     void showNewsDetialContent(String newsDetailContent);
+    // 显示进度
     void showProgress();
+    // 隐藏进度
     void hideProgress();
 }
